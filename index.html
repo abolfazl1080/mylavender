@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لاوندر | mylavender.ir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+    background: #faf7fb;
+    color: #3d2b3d;
+  }
+  header {
+    background: linear-gradient(135deg, #b57edc, #8e5ab5);
+    color: #fff;
+    padding: 18px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .logo { font-size: 24px; font-weight: 700; letter-spacing: 1px; }
+  .logo span { font-size: 13px; opacity: .8; display: block; letter-spacing: 0; font-weight: 300; }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 14px;
+    opacity: .9;
+  }
+  nav a:hover { opacity: 1; text-decoration: underline; }
+
+  .hero {
+    text-align: center;
+    padding: 70px 20px;
+    background: linear-gradient(180deg, #f3e9f8, #faf7fb);
+  }
+  .hero h1 { font-size: 32px; margin-bottom: 14px; color: #6d3d8f; }
+  .hero p { font-size: 16px; color: #7a6a7a; margin-bottom: 26px; }
+  .btn {
+    display: inline-block;
+    background: #9b59b6;
+    color: #fff;
+    padding: 12px 32px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .2s;
+  }
+  .btn:hover { background: #7d3f99; }
+
+  .products {
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 40px 20px 140px;
+  }
+  .products h2 {
+    text-align: center;
+    font-size: 22px;
+    color: #6d3d8f;
+    margin-bottom: 30px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(155, 89, 182, .12);
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 16px;
+    transition: transform .2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover { transform: translateY(-4px); }
+  .card .img {
+    height: 140px;
+    background: linear-gradient(135deg, #f0e2f7, #e3d0ef);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+  }
+  .card h3 { font-size: 15px; margin: 12px 0 6px; }
+  .card .price { color: #9b59b6; font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .add-btn {
+    margin: 0 16px;
+    background: #f0e2f7;
+    color: #6d3d8f;
+    border: none;
+    border-radius: 22px;
+    padding: 9px 0;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .add-btn:hover { background: #9b59b6; color: #fff; }
+
+  /* Floating cart */
+  .cart-fab {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    background: #9b59b6;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(155, 89, 182, .5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: transform .2s;
+  }
+  .cart-fab:hover { transform: scale(1.08); }
+  .cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #e74c3c;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+  }
+
+  /* Cart panel */
+  .cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(40, 20, 50, .45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+    z-index: 110;
+  }
+  .cart-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .cart-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 360px;
+    max-width: 90vw;
+    background: #fff;
+    z-index: 120;
+    transform: translateX(-100%);
+    transition: transform .3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 24px rgba(80, 40, 100, .25);
+  }
+  .cart-panel.open { transform: translateX(0); }
+  .cart-head {
+    background: linear-gradient(135deg, #b57edc, #8e5ab5);
+    color: #fff;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 500;
+  }
+  .cart-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  .cart-empty {
+    text-align: center;
+    color: #a998a9;
+    font-size: 14px;
+    margin-top: 40px;
+    line-height: 2;
+  }
+  .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0e6f4;
+  }
+  .cart-item .thumb {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: #f0e2f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .cart-item .info { flex: 1; }
+  .cart-item .info h4 { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .cart-item .info .p { font-size: 12px; color: #9b59b6; font-weight: 700; }
+  .qty {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .qty button {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1px solid #d9c3e6;
+    background: #faf5fc;
+    color: #6d3d8f;
+    font-size: 14px;
+    cursor: pointer;
+    line-height: 1;
+    font-family: inherit;
+  }
+  .qty span { font-size: 13px; min-width: 18px; text-align: center; }
+  .remove-item {
+    background: none;
+    border: none;
+    color: #c98b9c;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .cart-foot {
+    padding: 16px 20px 22px;
+    border-top: 1px solid #f0e6f4;
+    background: #fdfafd;
+  }
+  .cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    font-weight: 700;
+    color: #6d3d8f;
+    margin-bottom: 14px;
+  }
+  .checkout-btn {
+    width: 100%;
+    background: #9b59b6;
+    color: #fff;
+    border: none;
+    border-radius: 26px;
+    padding: 13px;
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .checkout-btn:hover { background: #7d3f99; }
+  .checkout-btn:disabled { background: #d9c3e6; cursor: not-allowed; }
+
+  footer {
+    background: #4a2d5c;
+    color: #e8d9f0;
+    text-align: center;
+    padding: 22px;
+    font-size: 13px;
+  }
+  footer a { color: #d7b8e8; text-decoration: none; }
+
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #4a2d5c;
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">لاوندر<span>mylavender.ir</span></div>
+  <nav>
+    <a href="#">خانه</a>
+    <a href="#">محصولات</a>
+    <a href="#">درباره ما</a>
+    <a href="#">تماس</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>زیبایی با طعم لاوندر 💜</h1>
+  <p>جدیدترین بدلیجات و اکسسوری‌های خاص با کیفیت عالی</p>
+  <a class="btn" href="#products">مشاهده محصولات</a>
+</section>
+
+<section class="products" id="products">
+  <h2>پرفروش‌ترین‌ها</h2>
+  <div class="grid" id="productGrid"></div>
+</section>
+
+<footer>
+  © ۱۴۰۴ لاوندر | <a href="https://mylavender.ir">mylavender.ir</a>
+</footer>
+
+<button class="cart-fab" id="cartFab" aria-label="سبد خرید">
+  🛒
+  <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+</button>
+
+<div class="cart-overlay" id="cartOverlay"></div>
+
+<aside class="cart-panel" id="cartPanel" aria-label="سبد خرید">
+  <div class="cart-head">
+    <span>سبد خرید</span>
+    <button class="cart-close" id="cartClose" aria-label="بستن">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <div class="cart-total">
+      <span>جمع کل:</span>
+      <span id="cartTotal">۰ تومان</span>
+    </div>
+    <button class="checkout-btn" id="checkoutBtn" disabled>پرداخت</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const products = [
+    { id: 1, name: 'انگشتر رزگلد',      price: 245000, emoji: '💍' },
+    { id: 2, name: 'گردنبند مروارید',   price: 320000, emoji: '📿' },
+    { id: 3, name: 'گوشواره کریستالی',  price: 180000, emoji: '💎' },
+    { id: 4, name: 'دستبند زنجیری',     price: 290000, emoji: '⌚' },
+    { id: 5, name: 'ست تاج و گوشواره',  price: 450000, emoji: '👑' },
+    { id: 6, name: 'آویز پروانه',       price: 150000, emoji: '🦋' }
+  ];
+
+  const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  const toFa = n => String(n).replace(/\d/g, d => faDigits[d]);
+  const formatPrice = n => toFa(n.toLocaleString('en-US').replace(/,/g, '،')) + ' تومان';
+
+  // ---- render products ----
+  const grid = document.getElementById('productGrid');
+  products.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="img">${p.emoji}</div>
+      <h3>${p.name}</h3>
+      <div class="price">${formatPrice(p.price)}</div>
+      <button class="add-btn" data-id="${p.id}">افزودن به سبد خرید</button>
+    `;
+    grid.appendChild(card);
+  });
+
+  // ---- cart state ----
+  let cart = []; // { id, qty }
+
+  const cartFab    = document.getElementById('cartFab');
+  const cartBadge  = document.getElementById('cartBadge');
+  const cartPanel  = document.getElementById('cartPanel');
+  const cartOverlay= document.getElementById('cartOverlay');
+  const cartClose  = document.getElementById('cartClose');
+  const cartItemsEl= document.getElementById('cartItems');
+  const cartTotalEl= document.getElementById('cartTotal');
+  const checkoutBtn= document.getElementById('checkoutBtn');
+  const toastEl    = document.getElementById('toast');
+
+  function findProduct(id) { return products.find(p => p.id === id); }
+
+  function cartCount() { return cart.reduce((s, i) => s + i.qty, 0); }
+  function cartTotal() {
+    return cart.reduce((s, i) => s + findProduct(i.id).price * i.qty, 0);
+  }
+
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(() => toastEl.classList.remove('show'), 1800);
+  }
+
+  function render() {
+    const count = cartCount();
+    cartBadge.style.display = count ? 'flex' : 'none';
+    cartBadge.textContent = toFa(count);
+
+    if (!cart.length) {
+      cartItemsEl.innerHTML = '<div class="cart-empty">سبد خرید شما خالی است 🛍️<br>از محصولات ما دیدن کنید.</div>';
+    } else {
+      cartItemsEl.innerHTML = cart.map(item => {
+        const p = findProduct(item.id);
+        return `
+          <div class="cart-item">
+            <div class="thumb">${p.emoji}</div>
+            <div class="info">
+              <h4>${p.name}</h4>
+              <div class="p">${formatPrice(p.price * item.qty)}</div>
+              <div class="qty">
+                <button data-act="dec" data-id="${p.id}">−</button>
+                <span>${toFa(item.qty)}</span>
+                <button data-act="inc" data-id="${p.id}">+</button>
+              </div>
+            </div>
+            <button class="remove-item" data-act="del" data-id="${p.id}" title="حذف">🗑</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    cartTotalEl.textContent = formatPrice(cartTotal());
+    checkoutBtn.disabled = cart.length === 0;
+  }
+
+  function addToCart(id) {
+    const item = cart.find(i => i.id === id);
+    if (item) item.qty++;
+    else cart.push({ id, qty: 1 });
+    render();
+    showToast('به سبد خرید اضافه شد ✓');
+  }
+
+  // ---- events ----
+  grid.addEventListener('click', e => {
+    const btn = e.target.closest('.add-btn');
+    if (btn) addToCart(Number(btn.dataset.id));
+  });
+
+  cartItemsEl.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    const id = Number(btn.dataset.id);
+    const item = cart.find(i => i.id === id);
+    if (!item) return;
+    const act = btn.dataset.act;
+    if (act === 'inc') item.qty++;
+    if (act === 'dec') { item.qty--; if (item.qty <= 0) cart = cart.filter(i => i.id !== id); }
+    if (act === 'del') cart = cart.filter(i => i.id !== id);
+    render();
+  });
+
+  function openCart()  { cartPanel.classList.add('open'); cartOverlay.classList.add('open'); }
+  function closeCart() { cartPanel.classList.remove('open'); cartOverlay.classList.remove('open'); }
+
+  cartFab.addEventListener('click', openCart);
+  cartClose.addEventListener('click', closeCart);
+  cartOverlay.addEventListener('click', closeCart);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+
+  checkoutBtn.addEventListener('click', () => {
+    if (!cart.length) return;
+    const total = formatPrice(cartTotal());
+    showToast(`در حال انتقال به درگاه پرداخت... (${total})`);
+    // TODO: اتصال به درگاه پرداخت واقعی
+  });
+
+  render();
+</script>
+
+</body>
+</html>
